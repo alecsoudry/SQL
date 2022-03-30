@@ -1,0 +1,86 @@
+CREATE TABLE CUSTOMER(
+			Email varchar2(30) NOT NULL,
+			Name varchar2(40),
+			Phone Number(10),
+			PRIMARY KEY (Email)
+			);
+			
+CREATE TABLE ACCOUNT_HOLDER(
+			Cust_ID Number(5) NOT NULL,
+			Birthday Date,
+			Gender char(1) CHECK (Gender = 'M' OR Gender = 'F'),
+			Street varchar2(25),
+			Zip_Code Number(5),
+			City varchar2(20),
+			Email varchar2(30),
+			FOREIGN KEY	(Email) REFERENCES CUSTOMER(Email),
+			PRIMARY KEY (Cust_ID)
+			);
+
+CREATE TABLE ACCOUNT(
+			Account# Number(8) NOT NULL,
+			Payment_Type varchar2(12) CHECK (Payment_Type = 'Cash App' OR Payment_Type = 'PayPal' OR Payment_Type = 'Credit' OR Payment_Type = 'Venmo'),
+			Date_Created DATE,
+			Cust_ID number(5),
+			foreign key (Cust_ID) REFERENCES ACCOUNT_HOLDER(Cust_ID),
+			PRIMARY KEY (Account#)
+			);
+			
+CREATE TABLE ITEM(
+			Item# number(5) NOT NULL CHECK(Item# >= 1 AND Item# <=400000),
+			Item_Name varchar2(25),
+			Item_Description varchar2(50),
+			PRIMARY KEY (Item#)
+			);
+
+CREATE TABLE CATEGORY(
+			Cat_ID number(6) NOT NULL CHECK (Cat_ID >= 1 OR Cat_ID <=6000),
+			Cat_Name varchar2(20) CHECK (Cat_Name = 'Clothing' OR Cat_Name = 'Jewelry' OR Cat_Name = 'Electronics' OR Cat_Name = 'Home' OR Cat_Name = 'Kitchen' OR Cat_Name = 'Sports' OR Cat_Name = 'Garden'),
+			Cat_Description varchar2(40),
+			PRIMARY KEY (Cat_ID)
+			);
+			
+CREATE TABLE BUY(
+			Item# number(5) NOT NULL,
+			Cust_ID number(5),
+			Buy_Date date,
+			Final_Price number(8),
+			PRIMARY KEY (Item#),
+			FOREIGN KEY (Cust_ID) REFERENCES ACCOUNT_HOLDER (Cust_ID),
+			FOREIGN KEY (Item#) REFERENCES ITEM (Item#)
+			);
+			
+CREATE TABLE OFFER(
+			Item# number(5) NOT NULL,
+			Cust_ID number(5),
+			Offer_Date date,
+			Ask_Price number(8),
+			Close_Date date,
+			PRIMARY KEY (Item#),
+			FOREIGN KEY (Cust_ID) REFERENCES ACCOUNT_HOLDER (Cust_ID),
+			FOREIGN KEY (Item#) REFERENCES ITEM (Item#)
+			);
+			
+CREATE TABLE BID(
+			Item# number(5),
+			Email varchar2(30),
+			Bid_Price number(8),
+			Bid_Date date,
+			PRIMARY KEY (Item#,Email),
+			FOREIGN KEY (Item#) REFERENCES ITEM (Item#),
+			FOREIGN KEY (Email) REFERENCES CUSTOMER (Email)
+			);
+			
+CREATE TABLE Belong_To(
+			Item# number(5),
+			Cat_ID number(6),
+			PRIMARY KEY (Item#,Cat_ID),
+			FOREIGN KEY (Item#) REFERENCES ITEM (Item#),
+			FOREIGN KEY (Cat_ID) REFERENCES CATEGORY (Cat_ID)
+			);
+			
+			
+			
+			
+			
+			

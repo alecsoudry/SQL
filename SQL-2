@@ -1,0 +1,245 @@
+ALTER TABLE EMPLOYEE DROP constraint ck_sal;
+ALTER TABLE DEPARTMENT DROP constraint ck_depname;
+ALTER TABLE DEPARTMENT DROP constraint ck_depno;
+ALTER TABLE LOCATION DROP constraint ck_deploc;
+ALTER TABLE DEPARTMENT_LOCATION DROP constraint pk_dep_loc;
+ALTER TABLE DEPARTMENT_LOCATION DROP constraint fk_loc_location;
+ALTER TABLE PROJECT DROP constraint ck_proj_no;
+ALTER TABLE WORKS_ON DROP constraint ck_workhrs;
+ALTER TABLE WORKS_ON DROP constraint fk_emp4;
+ALTER TABLE WORKS_ON DROP constraint fk_proj;
+ALTER TABLE DEPENDENT DROP constraint fk_emp3;
+
+##Part 1B
+1:
+INSERT INTO EMPLOYEE(SSNO, LAST_NAME, MI, FIRST_NAME, GENDER, BDATE, ADDRESS, SALARY, DNO)
+VALUES ('234015678', 'Day', 'H', 'Jessica', 'F', '25-Apr-1986', '859 Lagoon Way, Miami, FL', '110000', '18' );
+INSERT INTO DEPARTMENT (DEPT_NAME, DEPT_NO, MGRSSNO) VALUES ('R_and_D', '18', '453453453');
+INSERT INTO DEPARTMENT_LOCATION VALUES ('18', 'MIAMI');
+INSERT INTO LOCATION VALUES ('MIAMI', '100', 'FL');
+
+2.
+INSERT INTO PROJECT VALUES ('Research', '51', '18');
+INSERT INTO WORKS_ON VALUES ('234015678', '18', '89');
+
+3. 
+INSERT INTO DEPENDENT VALUES ('234015678','MIKE', 'M', '29-May-2014', 'SON');
+INSERT INTO DEPENDENT VALUES ('234015678','MOLLY', 'F', '23-Jan-2017', 'DAUGHTER');
+INSERT INTO DEPENDENT VALUES ('234015678','NICK', 'M', '14-Jan-1981', 'SPOUSE');
+
+Part 2
+1. 
+SELECT E.FIRST_NAME, E.MI, E.LAST_NAME, E.BDATE, E.ADDRESS, E.SSNO, D.DEPENDENT_NM
+FROM EMPLOYEE E, DEPENDENT D
+WHERE E.SSNO = D.ESSNO (+);
+
+FIRST_NAME           M LAST_NAME            BDATE
+-------------------- - -------------------- ---------
+ADDRESS                                  SSNO      DEPENDENT_NM
+---------------------------------------- --------- ---------------
+PAUL                 B MCCARTNEY            25-DEC-78
+731, FONDREN, WACO, TX                   123456789 ALICE
+
+PAUL                 B MCCARTNEY            25-DEC-78
+731, FONDREN, WACO, TX                   123456789 ELIZABETH
+
+PAUL                 B MCCARTNEY            25-DEC-78
+731, FONDREN, WACO, TX                   123456789 MICHAEL
+
+
+FIRST_NAME           M LAST_NAME            BDATE
+-------------------- - -------------------- ---------
+ADDRESS                                  SSNO      DEPENDENT_NM
+---------------------------------------- --------- ---------------
+FRANK                T WONG                 25-NOV-78
+638, VOSS, CLEVELAND, OH                 222556666 JOY
+
+FRANK                T WONG                 25-NOV-78
+638, VOSS, CLEVELAND, OH                 222556666 SARAH
+
+Jessica              H Day                  25-APR-86
+859 Lagoon Way, Miami, FL                234015678 MIKE
+
+
+FIRST_NAME           M LAST_NAME            BDATE
+-------------------- - -------------------- ---------
+ADDRESS                                  SSNO      DEPENDENT_NM
+---------------------------------------- --------- ---------------
+Jessica              H Day                  25-APR-86
+859 Lagoon Way, Miami, FL                234015678 MOLLY
+
+Jessica              H Day                  25-APR-86
+859 Lagoon Way, Miami, FL                234015678 NICK
+
+JENNIFER             S SMITH                25-JUL-78
+2912, BERRY, CINCINNATI, OH              987654321 BILL
+
+
+FIRST_NAME           M LAST_NAME            BDATE
+-------------------- - -------------------- ---------
+ADDRESS                                  SSNO      DEPENDENT_NM
+---------------------------------------- --------- ---------------
+AHMAD                V JABBAR               25-JUN-78
+980, CALHOUN, CINCINNATI, OH             987987987
+
+JAMES                E RUTHERFORD           25-AUG-78
+3321, CASTLE, SPRING, TX                 777211234
+
+JOYCE                A ENGLISH              25-OCT-78
+5631, RICE, ORLANDO, FL                  453453453
+
+
+FIRST_NAME           M LAST_NAME            BDATE
+-------------------- - -------------------- ---------
+ADDRESS                                  SSNO      DEPENDENT_NM
+---------------------------------------- --------- ---------------
+JANE                 B GOMEZ                25-SEP-78
+975, FIREOAK, HUMBLE, TX                 666884444
+
+
+13 rows selected.
+
+2a.
+SELECT SSNO FROM EMPLOYEE
+MINUS
+SELECT ESSNO FROM DEPENDENT;
+
+SSNO
+---------
+453453453
+666884444
+777211234
+987987987
+
+2b. 
+SELECT SSNO
+FROM EMPLOYEE
+WHERE SSNO NOT IN (
+SELECT ESSNO
+FROM DEPENDENT);
+
+SSNO
+---------
+987987987
+777211234
+453453453
+666884444
+
+3a.
+SELECT SSNO 
+FROM EMPLOYEE
+INTERSECT
+SELECT MGRSSNO
+FROM DEPARTMENT;
+
+SSNO
+---------
+222556666
+453453453
+777211234
+987654321
+
+3b.
+SELECT SSNO
+FROM EMPLOYEE E, DEPARTMENT D
+WHERE E.SSNO = D.MGRSSNO;
+
+SSNO
+---------
+777211234
+987654321
+222556666
+453453453
+
+4.
+SELECT FIRST_NAME, LAST_NAME, ADDRESS, DEPT_NAME, DEPENDENT_NM
+FROM EMPLOYEE E, DEPARTMENT D, DEPENDENT DEP
+WHERE E.SSNO = D.MGRSSNO (+)
+AND E.SSNO = DEP.ESSNO (+);
+
+FIRST_NAME           LAST_NAME
+-------------------- --------------------
+ADDRESS                                  DEPT_NAME       DEPENDENT_NM
+---------------------------------------- --------------- ---------------
+PAUL                 MCCARTNEY
+731, FONDREN, WACO, TX                                   ALICE
+
+PAUL                 MCCARTNEY
+731, FONDREN, WACO, TX                                   ELIZABETH
+
+PAUL                 MCCARTNEY
+731, FONDREN, WACO, TX                                   MICHAEL
+
+
+FIRST_NAME           LAST_NAME
+-------------------- --------------------
+ADDRESS                                  DEPT_NAME       DEPENDENT_NM
+---------------------------------------- --------------- ---------------
+FRANK                WONG
+638, VOSS, CLEVELAND, OH                 PRODUCTION      JOY
+
+FRANK                WONG
+638, VOSS, CLEVELAND, OH                 PRODUCTION      SARAH
+
+Jessica              Day
+859 Lagoon Way, Miami, FL                                MIKE
+
+
+FIRST_NAME           LAST_NAME
+-------------------- --------------------
+ADDRESS                                  DEPT_NAME       DEPENDENT_NM
+---------------------------------------- --------------- ---------------
+Jessica              Day
+859 Lagoon Way, Miami, FL                                MOLLY
+
+Jessica              Day
+859 Lagoon Way, Miami, FL                                NICK
+
+JENNIFER             SMITH
+2912, BERRY, CINCINNATI, OH              ADMINISTRATION  BILL
+
+
+FIRST_NAME           LAST_NAME
+-------------------- --------------------
+ADDRESS                                  DEPT_NAME       DEPENDENT_NM
+---------------------------------------- --------------- ---------------
+AHMAD                JABBAR
+980, CALHOUN, CINCINNATI, OH
+
+JAMES                RUTHERFORD
+3321, CASTLE, SPRING, TX                 HEADQUARTERS
+
+JOYCE                ENGLISH
+5631, RICE, ORLANDO, FL                  R_and_D
+
+
+FIRST_NAME           LAST_NAME
+-------------------- --------------------
+ADDRESS                                  DEPT_NAME       DEPENDENT_NM
+---------------------------------------- --------------- ---------------
+JANE                 GOMEZ
+975, FIREOAK, HUMBLE, TX
+
+
+13 rows selected.
+
+5. 
+SELECT DEPENDENT_NM
+FROM DEPENDENT D, WORKS_ON W, PROJECT P
+WHERE D.ESSNO = W.ESSNO
+AND W.PNO = P.PROJ_NO
+AND P.PROJ_NO IN (
+SELECT PROJ_NO
+FROM PROJECT
+WHERE PROJ_NAME = 'PRODUCT A');
+
+DEPENDENT_NM
+---------------
+ALICE
+ELIZABETH
+MICHAEL
+
+
+
+
+
